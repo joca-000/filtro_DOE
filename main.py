@@ -17,9 +17,8 @@ PALAVRAS_CHAVE = [
     "ICMS",
 ]
 
-EMAILS_DESTINATARIOS = [
-    "helenab3724@gmail.com"
-]
+emails_raw = os.environ.get("EMAILS_DESTINATARIOS", "")
+EMAILS_DESTINATARIOS = [e.strip() for e in emails_raw.split(",") if e.strip()]
 
 GMAIL_EMAIL = os.environ.get("GMAIL_EMAIL", "")
 GMAIL_SENHA_APP = os.environ.get("GMAIL_SENHA_APP", "")
