@@ -21,8 +21,8 @@ EMAILS_DESTINATARIOS = [
     "helenab3724@gmail.com"
 ]
 
-GMAIL_EMAIL = os.environ.get("GMAIL_EMAIL", "joao2004medeiros@gmail.com")
-GMAIL_SENHA_APP = os.environ.get("GMAIL_SENHA_APP", "bgzz lfut exfp xskd")
+GMAIL_EMAIL = os.environ.get("GMAIL_EMAIL", "")
+GMAIL_SENHA_APP = os.environ.get("GMAIL_SENHA_APP", "")
 
 
 # ─── FUNÇÕES ─────────────────────────────────────────────────
