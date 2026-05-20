@@ -21,8 +21,8 @@ EMAILS_DESTINATARIOS = [
     "helenab3724@gmail.com"
 ]
 
-GMAIL_EMAIL = os.environ.get("GMAIL_EMAIL", "")
-GMAIL_SENHA_APP = os.environ.get("GMAIL_SENHA_APP", "")
+GMAIL_EMAIL = os.environ.get("GMAIL_EMAIL", "joao2004medeiros@gmail.com")
+GMAIL_SENHA_APP = os.environ.get("GMAIL_SENHA_APP", "bgzz lfut exfp xskd")
 
 
 # ─── FUNÇÕES ─────────────────────────────────────────────────
@@ -52,16 +52,28 @@ def extrair_trechos_relevantes(pdf_bytes: bytes) -> list[dict]:
     resultados = []
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
         for i, pagina in enumerate(pdf.pages, start=1):
-            texto = pagina.extract_text() or ""
-            linhas = texto.split("\n")
-            for j, linha in enumerate(linhas):
-                linha_lower = linha.lower()
-                if any(kw.lower() in linha_lower for kw in PALAVRAS_CHAVE):
-                    # pega contexto: 2 linhas antes e 2 depois
-                    inicio = max(0, j - 2)
-                    fim    = min(len(linhas), j + 3)
-                    trecho = "\n".join(linhas[inicio:fim])
-                    resultados.append({"pagina": i, "trecho": trecho})
+            largura = pagina.width
+            coluna_esq = pagina.crop((0, 0, largura / 2, pagina.height))
+            coluna_dir = pagina.crop((largura / 2, 0, largura, pagina.height))
+
+            for coluna in [coluna_esq, coluna_dir]:
+                texto = coluna.extract_text() or ""
+                linhas = texto.split("\n")
+                linhas_ja_incluidas = set()  # controla o que já foi adicionado
+
+                for j, linha in enumerate(linhas):
+                    if any(kw.lower() in linha.lower() for kw in PALAVRAS_CHAVE):
+                        inicio = max(0, j - 2)
+                        fim = min(len(linhas), j + 3)
+
+                        if inicio in linhas_ja_incluidas:
+                            continue  # esse trecho já foi incluído, pula
+
+                        for k in range(inicio, fim):
+                            linhas_ja_incluidas.add(k)
+
+                        trecho = "\n".join(linhas[inicio:fim])
+                        resultados.append({"pagina": i, "trecho": trecho})
     return resultados
 
 def montar_email_html(data: date, trechos: list[dict], url_pdf: str) -> str:
@@ -71,10 +83,13 @@ def montar_email_html(data: date, trechos: list[dict], url_pdf: str) -> str:
     
     blocos = ""
     for item in trechos:
+        link_pagina = f"{url_pdf}#page={item['pagina']}"
         blocos += f"""
         <div style="background:#f5f5f5;padding:12px;margin:10px 0;
                     border-left:4px solid #0066cc;border-radius:4px;">
-            <small style="color:#666">Página {item['pagina']}</small>
+            <small style="color:#666">Página {item['pagina']}
+                <a href="{link_pagina}" style="color:#0066cc">📄 Página {item['pagina']}</a>
+            </small>
             <pre style="white-space:pre-wrap;font-size:13px">{item['trecho']}</pre>
         </div>"""
 
