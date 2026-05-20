@@ -1,0 +1,25 @@
+name: Diário Oficial PB
+
+on:
+  schedule:
+    - cron: '0 13 * * 1-5'  # Todo dia útil às 10h de Brasília (13h UTC)
+  workflow_dispatch:          # Permite rodar manualmente pela aba Actions
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: pip install requests pdfplumber
+
+      - name: Rodar script
+        run: python main.py
+        env:
+          GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
+          GMAIL_SENHA_APP: ${{ secrets.GMAIL_SENHA_APP }}
