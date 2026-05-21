@@ -2,7 +2,7 @@ name: Diário Oficial PB
 
 on:
   schedule:
-    - cron: '0 13 * * 1-5'  # Todo dia útil às 10h de Brasília (13h UTC)
+    - cron: '0 10 * * 1-5'  # Todo dia útil às 10h de Brasília (13h UTC)
   workflow_dispatch:          # Permite rodar manualmente pela aba Actions
 
 jobs:
