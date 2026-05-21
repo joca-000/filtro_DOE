@@ -23,3 +23,4 @@ jobs:
         env:
           GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
           GMAIL_SENHA_APP: ${{ secrets.GMAIL_SENHA_APP }}
+          EMAILS_DESTINATARIOS: ${{ secrets.EMAILS_DESTINATARIOS }}
